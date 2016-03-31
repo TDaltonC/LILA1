@@ -14,7 +14,7 @@ from remove_indifference_from_rank import remove_rank_indifferences
 #%%
 # Import the choices
 dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices5.csv', index_col=False)
+trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
 trial_by_trial_without_indifferences = trial_by_trial.groupby(['sid', 'treatment']).apply(remove_rank_indifferences, ranker = '_exp_rank')
 trial_by_trial_without_indifferences.reset_index(inplace = True, drop = True)
 trial_by_trial = trial_by_trial_without_indifferences
@@ -105,18 +105,19 @@ p_value_color = colors.LinearSegmentedColormap('p_value_map', p_value_map)
 def heatmap_fromDF(data, **kwargs):
     heatdata = pd.pivot_table(
         data,
-        values='tv_trial',
+        values='tv_half',
         index='rank_low',
         columns='rank_high', 
         aggfunc=np.mean)
     mask = heatdata != heatdata
+    
     sb.heatmap(
         heatdata, 
         mask = mask, 
-        cmap = "gist_heat", 
-        cbar = False,
-        vmin = 0, 
-        vmax = 0.85, 
+        cmap = "inferno", 
+#        cbar = False,
+#        vmin = 0, 
+#        vmax = .9,
         **kwargs)
         
 def slope_heatmap_fromDF(data, **kwargs):
@@ -179,7 +180,7 @@ def p_value_heatmap_fromDF(data, **kwargs):
 #%%
 # Plot all of the data across all subjects
 heatdata = pd.pivot_table(trial_by_trial,
-                          values='tv_trial',
+                          values='tv_full',
                           index='rank_low',
                           columns='rank_high', 
                           aggfunc=np.mean)
@@ -204,20 +205,20 @@ sb.plt.title('Inconsistencies with Elicited Rank - All Ages')
 #    plot = sb.heatmap(heatdata, mask = mask, cmap = "gist_heat")    
 
 #%%
-## Plot each subtask for each grade
-grade_treatment_grouped = trial_by_trial.groupby(["grade", "treatment"])
-for name, group in grade_treatment_grouped:
-    
-    plt.figure()
-    treatment = [treatments[x] for x in group.treatment]
-    heatdata = pd.pivot_table(group,
-                          values='ice',
-                          index='rank_low',
-                          columns='rank_high', 
-                          aggfunc=np.mean)
-    mask = heatdata != heatdata
-    plot = sb.heatmap(heatdata, mask = mask, cmap = "gist_heat")
-#    sb.plt.title('Inconsistencies in ' + treatment + ' treatment, grade ' + str(name[0]))
+### Plot each subtask for each grade
+#grade_treatment_grouped = trial_by_trial.groupby(["grade", "treatment"])
+#for name, group in grade_treatment_grouped:
+#    
+#    plt.figure()
+#    treatment = [treatments[x] for x in group.treatment]
+#    heatdata = pd.pivot_table(group,
+#                          values='ice_full',
+#                          index='rank_low',
+#                          columns='rank_high', 
+#                          aggfunc=np.mean)
+#    mask = heatdata != heatdata
+#    plot = sb.heatmap(heatdata, mask = mask, cmap = "gist_heat")
+##    sb.plt.title('Inconsistencies in ' + treatment + ' treatment, grade ' + str(name[0]))
 
 #%% Print a fact plot for each grade
 grade_grouped = trial_by_trial.groupby("grade")
@@ -241,16 +242,21 @@ for name, group in age_grouped:
     plt.subplots_adjust(top=0.9)
     g.fig.suptitle('Group '+ str(name))
     
-#%% Print a fact plot for each age group (Grouped in the K-1 2-3 4-5 U) for 1 task
+#%% Print a wide fact plot for each age group (Grouped in the K-1 2-3 4-5 U) for 1 task
 
 trial_by_trial['age_group'] = [age_groups[x] for x in trial_by_trial.grade]
 trial_by_trial['treatment_name'] = [treatments[x] for x in trial_by_trial.treatment]
+heat_map_subjects = trial_by_trial
+
+# Use this line to only use the SID's in the df 'trimmed' from heurisitic or distance scripts
+#heat_map_subjects = heat_may_subjects[heat_may_subjects['sid'].isin(trimmed['sid'])]
+
 plt.figure()
-g = sb.FacetGrid(trial_by_trial[trial_by_trial['treatment_name']=="Risk"], col="age_group", col_order = ['K&1', '2&3', '4&5', 'U'])
+g = sb.FacetGrid(heat_map_subjects[heat_map_subjects['treatment_name']=="Social"], col="age_group", col_order = ['K&1', '2&3', '4&5', 'U'])
 g = g.map_dataframe(heatmap_fromDF)
 #plt.subplots_adjust(top=0.9)
 #g.fig.suptitle('Group '+ str(name))  
-    
+g.savefig('../Figures/social_heatmap.svg', format =  'svg') 
     
 #%% Do a regression for each sqaure in the heatmap across age.
     # Make a heatmap where the "intercept" is in red and the "slope" is in green. 
@@ -259,7 +265,8 @@ g = g.map_dataframe(heatmap_fromDF)
 ## Example cell regression with age
  # Recode undergrads to 6
 regression_DF = trial_by_trial
-regression_DF["grade"][regression_DF.grade == 14] = 6
+regression_DF["grade_regress"] = regression_DF["grade"]
+regression_DF["grade_regress"][regression_DF.grade == 14] = 6
 
 
 # groupby treatment, rank_high, rank_low 
@@ -268,7 +275,7 @@ trial_grouped = regression_DF.groupby(['treatment', 'rank_high','rank_low'])
 def regress_grade_and_ice_red(group):
 #    group.plot(x = 'grade', y = 'ice', kind = 'scatter')
 #    sb.lmplot(x = 'grade', y = 'ice', data = group)
-    slope, intercept, r_value, p_value, stderr =  sp.stats.linregress(group.grade, group.ice)
+    slope, intercept, r_value, p_value, stderr =  sp.stats.linregress(group.grade_regress, group.ice_full)
     return pd.DataFrame({'slope': slope,'intercept': intercept, 'p_value': p_value}, index = group.name)
     
 heahmap_data = trial_grouped.apply(regress_grade_and_ice_red)

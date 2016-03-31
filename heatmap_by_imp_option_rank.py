@@ -14,7 +14,7 @@ from remove_indifference_from_rank import remove_rank_indifferences
 #%%
 # Import the choices
 dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices5.csv', index_col=False)
+trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
 trial_by_trial_without_indifferences = trial_by_trial.groupby(['sid', 'treatment']).apply(remove_rank_indifferences, ranker = '_imp_rank')
 trial_by_trial_without_indifferences.reset_index(inplace = True, drop = True)
 trial_by_trial = trial_by_trial_without_indifferences
@@ -62,7 +62,7 @@ bbr = colors.LinearSegmentedColormap('bbr_map', bbr_map)
 def heatmap_fromDF(data, **kwargs):
     heatdata = pd.pivot_table(
         data,
-        values='icr',
+        values='ice_full',
         index='rank_low',
         columns='rank_high', 
         aggfunc=np.mean)
@@ -134,7 +134,7 @@ def p_value_heatmap_fromDF(data, **kwargs):
 #%%
 # Plot all of the data across all subjects
 heatdata = pd.pivot_table(trial_by_trial,
-                          values='icr',
+                          values='ice_full',
                           index='rank_low',
                           columns='rank_high', 
                           aggfunc=np.mean)
@@ -151,7 +151,7 @@ for name, group in grade_treatment_grouped:
     plt.figure()
     treatment = [treatments[x] for x in group.treatment]
     heatdata = pd.pivot_table(group,
-                          values='icr',
+                          values='ice_full',
                           index='rank_low',
                           columns='rank_high', 
                           aggfunc=np.mean)
@@ -166,7 +166,7 @@ for name, group in grade_treatment_grouped:
     plt.figure()
     treatment = [treatments[x] for x in group.treatment]
     heatdata = pd.pivot_table(group,
-                          values='icr',
+                          values='ice_full',
                           index='rank_low',
                           columns='rank_high', 
                           aggfunc=np.mean)
@@ -215,7 +215,7 @@ trial_grouped = regression_DF.groupby(['treatment', 'rank_high','rank_low'])
 def regress_grade_and_ice_red(group):
 #    group.plot(x = 'grade', y = 'ice', kind = 'scatter')
 #    sb.lmplot(x = 'grade', y = 'ice', data = group)
-    slope, intercept, r_value, p_value, stderr =  sp.stats.linregress(group.grade, group.icr)
+    slope, intercept, r_value, p_value, stderr =  sp.stats.linregress(group.grade, group.ice_full)
     return pd.DataFrame({'slope': slope,'intercept': intercept, 'p_value': p_value}, index = group.name)
 
 heahmap_data = trial_grouped.apply(regress_grade_and_ice_red)

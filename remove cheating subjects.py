@@ -15,7 +15,7 @@ import matplotlib.colors as colors
 #%%
 # Import the choices
 dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices1.csv', index_col=False)
+trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
 tvs = pd.DataFrame.from_csv(dataDir + 'tvs5.csv', index_col=False)
 ## magic strings for treatments
 treatments = {1:'Goods', 2:'Risk', 3:'Social'}
@@ -72,6 +72,6 @@ error_count = pd.merge(treatment_summary, cheaters, on = ['sid', 'grade', 'treat
 # replace nan's wih 0's
 error_count.loc[error_count['cheater'] != error_count['cheater'],'cheater'] = 0
 
-sb.factorplot(x='grade', y = 'ice', hue = 'treatment', data = error_count[(error_count['cheater'] == 0)])
+sb.factorplot(x='grade', y = 'tv_half', hue = 'treatment', data = error_count[(error_count['cheater'] == 0)])
 
 #%% Do people that use a simple rule on the pairwise task have a prefered exp rank

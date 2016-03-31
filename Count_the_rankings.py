@@ -15,7 +15,7 @@ import matplotlib.colors as colors
 #%%
 # Import the choices
 dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices5.csv', index_col=False)
+trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
 ## magic strings for treatments
 treatments = {1:'Goods', 2:'Risk', 3:'Social'}
 age_groups = {0:'K&1', 1:'K&1', 2:'2&3', 3:'2&3', 4:'4&5', 5:'4&5', 14:'U'}

@@ -1,0 +1,5 @@
+age_group,max_self_ind,max_self_max_other,max_self_min_other,min_self_ind,min_self_max_other,min_self_min_other,max_other_ind,max_other_max_self,min_other_ind,min_other_min_self,max_social_ind,max_social_max_self,max_social_max_other,min_social_ind,min_social_max_self,min_social_max_other
+0&1,1.0,0.0,8.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2&3,1.0,0.0,4.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+4&5,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+U,0.0,8.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

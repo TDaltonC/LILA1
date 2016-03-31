@@ -18,7 +18,7 @@ import matplotlib.colors as colors
 #%%
 # Import the choices
 dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices5.csv', index_col=False)
+trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
 
 #%% Make the option datafarme
 # optionDF format ['SID', 'item', 'task', 'exp_rank', 'imp_rank', 'gender', 'grade']
@@ -160,7 +160,7 @@ def violation_scorer1(row):
         elif row.chosen_opt == 0:
             return 0
 
-trial_by_trial['icr'] = trial_by_trial.apply(violation_scorer5, axis = 1)
+trial_by_trial['ice'] = trial_by_trial.apply(violation_scorer5, axis = 1)
 
 #%% Save
-trial_by_trial.to_csv(dataDir + 'choices5.csv', index = False)
+#trial_by_trial.to_csv(dataDir + 'choices5.csv', index = False)

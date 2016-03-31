@@ -14,7 +14,7 @@ import matplotlib.colors as colors
 #%%
 # Import the choices
 dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices5.csv', index_col=False)
+trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
 norms = pd.DataFrame.from_csv(dataDir + 'moral_norms.csv', index_col=False)
 ## Recode Choice LR so that 1 is higher rank, -1 is lower rank and 0 is indiff if you're visualizing preferences and chocies
 trial_by_trial.loc[trial_by_trial['choice_LR'] == 2, 'choice_LR'] = -1
@@ -64,7 +64,6 @@ gbr = colors.LinearSegmentedColormap('bbr_map', gbr_map)
 def heatmap_fromDF(data, **kwargs):
     heatdata = pd.pivot_table(
         data,
-        values='icr',
         index='item2',
         columns='item1', 
         aggfunc=np.median)
@@ -151,7 +150,7 @@ for name, group in grade_treatment_grouped:
         center = 0,
 #        vmin =  0, 
 #        vmax =  0.22,
-        cmap = bbr)
+        cmap = gbr)
     
     ax.set_title(name)
     plt.show()

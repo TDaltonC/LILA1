@@ -22,7 +22,7 @@ def remove_rank_indifferences(group, ranker='_exp_rank'):
     option1s.rename(columns={'opt1'+ranker: 'rank', 'option1': 'option_code'}, inplace=True)
     option2s = temp_group.loc[:,['opt2'+ranker, 'option2']].copy()
     option2s.rename(columns={'opt2'+ranker: 'rank', 'option2': 'option_code'}, inplace=True)
-    options = pd.concat([option1s, option2s])
+    options = pd.concat([option1s, option2s], ignore_index = True)
     unique_options = options.drop_duplicates(['option_code'])
 #    make a backup copy of the original ranking. 
     unique_options['original_rank'] = unique_options['rank']
@@ -88,15 +88,17 @@ def remove_rank_indifferences(group, ranker='_exp_rank'):
                             
 #    reduce the DF so that there is one value for each comparieson.
     group_without_indifferences = multiple_rakning_DF.groupby(['sid', 'treatment', 'grade', 'gender', 'temp_rank_high', 'temp_rank_low']).agg(np.mean)
-    group_without_indifferences = group_without_indifferences.loc[:,['ice', 'icr', 'tv_trial']].copy()
+    group_without_indifferences = group_without_indifferences.loc[:,['ice_full', 'icr_full', 'tv_full', 'ice_half', 'icr_half', 'tv_half']].copy()
+#    group_without_indifferences = group_without_indifferences.loc[:,['ice', 'icr', 'tv']].copy()
     group_without_indifferences.reset_index(inplace = True)
     group_without_indifferences.rename(columns={'temp_rank_high': 'rank_high', 'temp_rank_low': 'rank_low'}, inplace=True)
-    
+    group_without_indifferences['rank_high'].astype(np.int16)
+    group_without_indifferences['rank_low'].astype(np.int16)
 #    return with format ['sid', 'treatment', 'grade', 'gender', 'high_rank_option', 'low_rank_option', 'ice']
     return group_without_indifferences
                             
 if __name__ == "__main__":
     dataDir = '/Users/Dalton/Documents/Projects/LILA1/dataFrames/'
-    trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices5.csv', index_col=False)
+    trial_by_trial = pd.DataFrame.from_csv(dataDir + 'choices_all.csv', index_col=False)
     trial_by_trial_without_indifferences = trial_by_trial.groupby(['sid', 'treatment']).apply(remove_rank_indifferences, ranker = '_exp_rank')
     trial_by_trial_without_indifferences.reset_index(drop=True)
